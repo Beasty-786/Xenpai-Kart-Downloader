@@ -45,6 +45,9 @@ jobs:
       - name: Build portable application
         run: uv run python scripts/deploy.py
 
+      - name: Build standalone one-file application
+        run: uv run python scripts/deploy.py --onefile
+
       - name: Build English installer
         run: |
           choco install innosetup --yes --no-progress
@@ -66,6 +69,7 @@ jobs:
           name: Xenpai-Kart-Downloader-v${{ env.XENPAI_VERSION }}-Release
           path: |
             dist/Xenpai-Kart-Downloader-v${{ env.XENPAI_VERSION }}-Windows-Setup.exe
+            dist/Xenpai-Kart-Downloader-v${{ env.XENPAI_VERSION }}-Standalone.exe
             dist/Xenpai-Kart-Downloader-Chromium-*.zip
             dist/Xenpai-Kart-Downloader-Firefox-*.xpi
 
@@ -76,8 +80,9 @@ jobs:
         shell: pwsh
         run: |
           $installer = "dist/Xenpai-Kart-Downloader-v${env:XENPAI_VERSION}-Windows-Setup.exe"
+          $standalone = "dist/Xenpai-Kart-Downloader-v${env:XENPAI_VERSION}-Standalone.exe"
           $chromium = (Get-ChildItem "dist/Xenpai-Kart-Downloader-Chromium-*.zip").FullName
           $firefox = (Get-ChildItem "dist/Xenpai-Kart-Downloader-Firefox-*.xpi").FullName
-          gh release create "${{ github.ref_name }}" $installer $chromium $firefox `
+          gh release create "${{ github.ref_name }}" $installer $standalone $chromium $firefox `
             --title "Xenpai Kart Downloader v${env:XENPAI_VERSION}" `
             --generate-notes

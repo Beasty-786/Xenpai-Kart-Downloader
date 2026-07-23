@@ -10,7 +10,8 @@ Use this checklist for every Xenpai Kart Downloader update:
 5. Increment the version in the application and installer.
 6. Regenerate resources, run the complete test suite, and perform a Windows
    launch/download smoke test.
-7. Build the portable application and the English-only Inno Setup installer.
+7. Build the portable folder, standalone one-file EXE, and English-only Inno
+   Setup installer.
 8. Build the English-only Chromium and Firefox extension packages using the
    Xenpai name, logo, version, and URL scheme.
 9. Name the installer

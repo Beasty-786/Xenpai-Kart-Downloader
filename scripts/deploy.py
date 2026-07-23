@@ -1,4 +1,5 @@
 import ast
+import argparse
 import os
 import plistlib
 import shutil
@@ -97,7 +98,7 @@ def findIncludes() -> tuple[list[str], list[str]]:
     return sorted(packages), sorted(modules)
 
 
-def buildArgs() -> list[str]:
+def buildArgs(onefile: bool = False) -> list[str]:
     includePackages, includeModules = findIncludes()
     includeArgs = [
         *[f"--include-package={package}" for package in includePackages],
@@ -107,9 +108,9 @@ def buildArgs() -> list[str]:
     nuitka = f'"{sys.executable}" -m nuitka'
 
     if sys.platform == "win32":
-        return [
+        args = [
             nuitka,
-            '--standalone',
+            '--onefile' if onefile else '--standalone',
             '--windows-console-mode=attach',
             '--plugin-enable=pyside6',
             *includeArgs,
@@ -124,8 +125,18 @@ def buildArgs() -> list[str]:
             '--file-description="Xenpai Kart Downloader"',
             f'--copyright="Copyright(C) {YEAR} {AUTHOR}"',
             '--output-dir=dist',
-            'Xenpai-Kart-Downloader.py',
         ]
+        if onefile:
+            args.extend([
+                *[
+                    f'--include-package={pack.name}'
+                    for pack in findPacks()
+                ],
+                '--include-data-dir=build/onefile_features=features',
+                f'--output-filename=Xenpai-Kart-Downloader-v{VERSION}-Standalone.exe',
+            ])
+        args.append('Xenpai-Kart-Downloader.py')
+        return args
 
     if sys.platform == "darwin":
         return [
@@ -199,6 +210,21 @@ def copyPacks() -> None:
     print(f"Copied feature packs to {targetRoot}: {[p.name for p in packs]}")
 
 
+def prepareOnefilePacks() -> None:
+    """Stage manifests while Nuitka embeds the feature-pack Python packages."""
+    targetRoot = REPO / "build" / "onefile_features"
+    if targetRoot.exists():
+        shutil.rmtree(targetRoot)
+    targetRoot.mkdir(parents=True)
+
+    for sourceRoot in findPacks():
+        targetPack = targetRoot / sourceRoot.name
+        targetPack.mkdir()
+        shutil.copy2(sourceRoot / "manifest.toml", targetPack / "manifest.toml")
+
+    print(f"Prepared onefile feature packs in {targetRoot}")
+
+
 def patchInfoPlist() -> None:
     appBundle = Path("dist") / "Xenpai-Kart-Downloader.app"
     plistPath = appBundle / "Contents" / "Info.plist"
@@ -234,17 +260,38 @@ def patchInfoPlist() -> None:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--onefile",
+        action="store_true",
+        help="Build a single portable Windows executable with embedded feature packs.",
+    )
+    options = parser.parse_args()
+
     os.chdir(REPO)
 
-    args = buildArgs()
+    if options.onefile:
+        if sys.platform != "win32":
+            parser.error("--onefile is currently supported only on Windows")
+        prepareOnefilePacks()
+
+    args = buildArgs(onefile=options.onefile)
     command = ' '.join(args)
 
     print(command)
-    result = subprocess.run(command, shell=True)
+    env = os.environ.copy()
+    if options.onefile:
+        featurePath = str(REPO / "features")
+        env["PYTHONPATH"] = os.pathsep.join(
+            value for value in (featurePath, env.get("PYTHONPATH", "")) if value
+        )
+
+    result = subprocess.run(command, shell=True, env=env)
     if result.returncode != 0:
         return result.returncode
 
-    copyPacks()
+    if not options.onefile:
+        copyPacks()
 
     if sys.platform == "darwin":
         patchInfoPlist()

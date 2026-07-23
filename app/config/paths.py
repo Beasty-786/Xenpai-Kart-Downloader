@@ -20,6 +20,13 @@ APP_DATA_DIR: str = (
     else f"{QStandardPaths.writableLocation(QStandardPaths.StandardLocation.GenericDataLocation)}/XenpaiKartDownloader"
 )
 
+# In onefile builds, bundled data is extracted beside compiled modules while
+# sys.executable continues to point at the original portable EXE.
+_moduleRoot = Path(__file__).resolve().parents[2]
+bundledResourceDir = (
+    _moduleRoot if (_moduleRoot / "features").is_dir() else executableDir
+)
+
 PORTABLE_PATH = executableDir / "XenpaiKartDownloader"
 USER_PATH = Path(QStandardPaths.writableLocation(
     QStandardPaths.StandardLocation.GenericDataLocation

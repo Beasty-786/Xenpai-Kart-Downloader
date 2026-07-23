@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 from PySide6.QtCore import QObject
 
-from app.config.paths import executableDir
+from app.config.paths import bundledResourceDir
 from app.platform import file_association
 from app.services.pack_loader import loadPacks
 
@@ -34,7 +34,7 @@ class FeatureService(QObject):
         return self._packs
 
     def load(self, services=None) -> None:
-        for pack in loadPacks(executableDir / "features", services):
+        for pack in loadPacks(bundledResourceDir / "features", services):
             self._register(pack)
 
     def activate(self, coroutineRunner) -> None:

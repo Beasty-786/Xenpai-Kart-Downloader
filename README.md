@@ -23,6 +23,7 @@ The project uses Python 3.11 and `uv`.
 uv sync
 .venv\Scripts\python.exe -m pytest -q
 .venv\Scripts\python.exe scripts\deploy.py
+.venv\Scripts\python.exe scripts\deploy.py --onefile
 ```
 
 The Windows installer is built with Inno Setup:
@@ -45,9 +46,9 @@ rebuilt here so every update preserves the Xenpai name, icon, publisher,
 English-only interface, and stable installer identity. See
 [UPDATE_POLICY.md](UPDATE_POLICY.md).
 
-Each tagged release contains the Windows installer plus English-only extension
-packages for Chromium browsers (Chrome, Edge, Brave, Opera, and compatible
-browsers) and Firefox.
+Each tagged release contains the Windows installer, a no-install standalone
+EXE, plus English-only extension packages for Chromium browsers (Chrome, Edge,
+Brave, Opera, and compatible browsers) and Firefox.
 
 ## License and attribution
 

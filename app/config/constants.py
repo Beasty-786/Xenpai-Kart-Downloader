@@ -1,6 +1,6 @@
 YEAR = 2026
 AUTHOR = "Dhiraj Kumar Singh"
-VERSION = "4.1.2"
+VERSION = "4.1.3"
 DESKTOP_ID = "com.dhirajkumarsingh.XenpaiKartDownloader"
 DESKTOP_OBJECT_PATH = "/" + DESKTOP_ID.replace(".", "/")
 LATEST_EXTENSION_VERSION = "2.1.1"

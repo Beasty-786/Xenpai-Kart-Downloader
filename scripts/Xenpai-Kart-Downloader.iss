@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Xenpai Kart Downloader"
-#define MyAppVersion "4.1.2"
+#define MyAppVersion "4.1.3"
 #define MyAppPublisher "Dhiraj Kumar Singh"
 #define MyAppURL "https://github.com/Beasty-786/Xenpai-Kart-Downloader"
 #define MyAppExeName "Xenpai-Kart-Downloader.exe"
