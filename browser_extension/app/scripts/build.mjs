@@ -1,4 +1,4 @@
-import {access, cp, mkdir, readFile, writeFile} from "node:fs/promises";
+import {access, cp, mkdir, readdir, readFile, rm, writeFile} from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
@@ -10,7 +10,7 @@ const appRoot = path.resolve(__dirname, "..");
 const upstreamDir = path.resolve(appRoot, "../upstream");
 const catchScriptDir = path.resolve(upstreamDir, "catch-script");
 const upstreamContentScript = path.resolve(upstreamDir, "js/content-script.js");
-const firefoxAddonId = "ghostdownloader@github.com";
+const firefoxAddonId = "xenpai-kart-downloader@beasty-786.github.io";
 const manifestTemplate = JSON.parse(
   await readFile(path.resolve(appRoot, "public/manifest.json"), "utf8"),
 );
@@ -125,6 +125,15 @@ for (const [target, config] of Object.entries(buildTargets)) {
     path.resolve(config.outDir, "manifest.json"),
     `${JSON.stringify(createManifest(target), null, 2)}\n`,
   );
+
+  // Xenpai is distributed as an English-only extension. Vite copies every
+  // source locale from public/, so remove all but en_US from the artifact.
+  const localeDir = path.resolve(config.outDir, "_locales");
+  for (const locale of await readdir(localeDir)) {
+    if (locale !== "en_US") {
+      await rm(path.resolve(localeDir, locale), { recursive: true, force: true });
+    }
+  }
 }
 
 delete process.env.GD4B_BROWSER_TARGET;

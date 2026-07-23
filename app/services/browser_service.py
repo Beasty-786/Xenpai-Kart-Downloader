@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-import struct
+import shutil
 import zipfile
 from dataclasses import dataclass
 from enum import StrEnum
@@ -28,16 +28,15 @@ EXTENSION_UNPACK_DIR = Path(APP_DATA_DIR) / "browser_extension"
 
 
 async def extractBrowserExtension() -> Path:
-    """Extract the embedded CRX resource to APP_DATA_DIR/browser_extension/."""
+    """Extract the embedded Chromium extension to the application data folder."""
     def _extract() -> Path:
-        resource = QResource(":/res/chrome_extension.crx")
-        crxData = bytes(resource.data())
+        resource = QResource(":/res/chrome_extension.zip")
+        zipData = bytes(resource.data())
 
-        headerSize = struct.unpack_from("<I", crxData, 8)[0]
-        zipOffset = 12 + headerSize
-
+        if EXTENSION_UNPACK_DIR.exists():
+            shutil.rmtree(EXTENSION_UNPACK_DIR)
         EXTENSION_UNPACK_DIR.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(BytesIO(crxData[zipOffset:])) as zf:
+        with zipfile.ZipFile(BytesIO(zipData)) as zf:
             zf.extractall(EXTENSION_UNPACK_DIR)
 
         return EXTENSION_UNPACK_DIR

@@ -30,6 +30,18 @@ jobs:
       - name: Run tests
         run: uv run python -m pytest -q
 
+      - name: Build English browser extensions
+        working-directory: browser_extension/app
+        run: |
+          npm ci
+          npm run typecheck
+          npm run build
+
+      - name: Package browser extensions
+        run: |
+          uv run python scripts/package_browser_extensions.py
+          uv run pyside6-rcc -g python -o app/assets/resources.py app/assets/resources.qrc
+
       - name: Build portable application
         run: uv run python scripts/deploy.py
 
@@ -47,8 +59,11 @@ jobs:
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Xenpai-Kart-Downloader-v${{ env.XENPAI_VERSION }}-Windows-Setup
-          path: dist/Xenpai-Kart-Downloader-v${{ env.XENPAI_VERSION }}-Windows-Setup.exe
+          name: Xenpai-Kart-Downloader-v${{ env.XENPAI_VERSION }}-Release
+          path: |
+            dist/Xenpai-Kart-Downloader-v${{ env.XENPAI_VERSION }}-Windows-Setup.exe
+            dist/Xenpai-Kart-Downloader-Chromium-*.zip
+            dist/Xenpai-Kart-Downloader-Firefox-*.xpi
 
       - name: Publish tagged release
         if: startsWith(github.ref, 'refs/tags/')
@@ -57,6 +72,8 @@ jobs:
         shell: pwsh
         run: |
           $installer = "dist/Xenpai-Kart-Downloader-v${env:XENPAI_VERSION}-Windows-Setup.exe"
-          gh release create "${{ github.ref_name }}" $installer `
+          $chromium = (Get-ChildItem "dist/Xenpai-Kart-Downloader-Chromium-*.zip").FullName
+          $firefox = (Get-ChildItem "dist/Xenpai-Kart-Downloader-Firefox-*.xpi").FullName
+          gh release create "${{ github.ref_name }}" $installer $chromium $firefox `
             --title "Xenpai Kart Downloader v${env:XENPAI_VERSION}" `
             --generate-notes

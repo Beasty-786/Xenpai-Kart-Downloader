@@ -89,10 +89,10 @@
     "message": "Media button"
   },
   "downloadWithGhostDownloader": {
-    "message": "Download with Ghost Downloader"
+    "message": "Download with Xenpai Kart Downloader"
   },
   "saveAsWithGhostDownloader": {
-    "message": "Save As with Ghost Downloader"
+    "message": "Save As with Xenpai Kart Downloader"
   },
   "downloading": {
     "message": "Downloading"
@@ -254,10 +254,10 @@
     "message": "Failed to update take-over downloads"
   },
   "extensionDescription": {
-    "message": "Manage Ghost Downloader tasks and send browser resources to Ghost Downloader."
+    "message": "Manage Xenpai Kart Downloader tasks and send browser resources to Xenpai Kart Downloader."
   },
   "extensionName": {
-    "message": "Ghost Downloader for Browser"
+    "message": "Xenpai Kart Downloader for Browser"
   },
   "extensionVersionInfo": {
     "message": "Extension version $1"
@@ -388,7 +388,7 @@
     "message": "Merge"
   },
   "mergeTaskSentToDesktop": {
-    "message": "Online merge task sent to Ghost Downloader"
+    "message": "Online merge task sent to Xenpai Kart Downloader"
   },
   "minInterceptSize": {
     "message": "Minimum Intercept Size"
@@ -527,7 +527,7 @@
     "message": "Resource sent to browser for downloading"
   },
   "resourceSentToDesktop": {
-    "message": "Resource sent to Ghost Downloader"
+    "message": "Resource sent to Xenpai Kart Downloader"
   },
   "restoringCapturedResources": {
     "message": "Restoring captured resources"
@@ -581,10 +581,10 @@
     "message": "Send ($1)"
   },
   "sendCurrentMediaToGhostDownloader": {
-    "message": "Send current media to Ghost Downloader"
+    "message": "Send current media to Xenpai Kart Downloader"
   },
   "sendToDesktop": {
-    "message": "Send to Ghost Downloader"
+    "message": "Send to Xenpai Kart Downloader"
   },
   "sending": {
     "message": "Sending"
@@ -596,7 +596,7 @@
     "message": "Sent to browser download"
   },
   "sentToDesktop": {
-    "message": "Sent to Ghost Downloader"
+    "message": "Sent to Xenpai Kart Downloader"
   },
   "serverUrlSaved": {
     "message": "Address saved"

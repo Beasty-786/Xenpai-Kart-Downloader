@@ -20,8 +20,7 @@ from qfluentwidgets.common.style_sheet import updateStyleSheet
 
 from app.config.cfg import cfg, LANGUAGE_TEXTS
 from app.config.constants import (
-    CHROME_WEBSTORE_URL, EDGE_ADDONS_URL, FIREFOX_ADDONS_URL,
-    LATEST_EXTENSION_VERSION,
+    LATEST_EXTENSION_VERSION, RELEASES_URL,
 )
 
 if TYPE_CHECKING:
@@ -423,14 +422,14 @@ class BrowserExtensionPage(QWidget):
             isRecommended=True, parent=self,
         )
         self.storeCards: list[tuple[ActionCard, str]] = []
-        for title, url in [
-            (self.tr("Chrome 商店"), CHROME_WEBSTORE_URL),
-            (self.tr("Edge 商店"), EDGE_ADDONS_URL),
-            (self.tr("Firefox 商店"), FIREFOX_ADDONS_URL),
-        ]:
-            self.storeCards.append((ActionCard(FluentIcon.GLOBE, title, parent=self), url))
+        self.storeCards.append((
+            ActionCard(FluentIcon.GLOBE, "Xenpai extension downloads", parent=self),
+            RELEASES_URL,
+        ))
 
-        self.footnote = CaptionLabel(self.tr("商店版更新需等待审核，可能滞后于桌面端"), self)
+        self.footnote = CaptionLabel(
+            "English packages for Chromium browsers and Firefox", self,
+        )
         self.footnote.setTextColor(Qt.GlobalColor.gray, Qt.GlobalColor.gray)
 
     def _initLayout(self) -> None:

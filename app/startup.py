@@ -65,9 +65,16 @@ def bindNotifications(taskService, notifyCompleted, notifyDiskSpace):
 
 
 def checkUpdateAtStartup(coroutineRunner, onUpdateAvailable):
-    # Custom-branded builds must not install upstream Ghost Downloader
-    # releases, because doing so would replace the Xenpai identity.
-    return
+    from app.config.cfg import cfg
+    if not cfg.shouldCheckUpdateAtStartup.value:
+        return
+    from app.update import fetchRelease, isOutdated
+
+    def _onFetched(release):
+        if isOutdated(release):
+            onUpdateAvailable(release)
+
+    coroutineRunner.submit(fetchRelease(), done=_onFetched)
 
 
 def stopEngine(taskService, browserService, aria2RpcServer, featureService, coroutineRunner):

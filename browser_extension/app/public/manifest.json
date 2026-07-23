@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "default_locale": "zh_CN",
-  "version": "2.1.0",
+  "default_locale": "en_US",
+  "version": "2.1.1",
   "permissions": [
     "alarms",
     "contextMenus",
@@ -24,7 +24,7 @@
     "extension_pages": "default-src 'self'; script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; connect-src ws://127.0.0.1:* ws://localhost:* wss://127.0.0.1:* wss://localhost:*;"
   },
   "action": {
-    "default_title": "Ghost Downloader",
+    "default_title": "Xenpai Kart Downloader",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icon16.png",

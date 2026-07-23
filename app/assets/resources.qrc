@@ -6,7 +6,7 @@
     <file>logo_menubar_template.png</file>
   </qresource>
   <qresource prefix="res">
-    <file>chrome_extension.crx</file>
+    <file>chrome_extension.zip</file>
 <!--    <file>firefox_extension.xpi</file>-->
 <!--    <file>install_chrome_extension_guidance.png</file>-->
     <file>install_chrome_extension_guidance.webp</file>

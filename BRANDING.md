@@ -8,7 +8,7 @@ XiaoYouChR. The original project and its dependency download endpoints remain
 credited in the source and application support links. See `LICENSE` for the
 full license terms.
 
-This build contains only the English UI translation. Upstream update checks
-and update installation are disabled so a Ghost Downloader release cannot
-replace the Xenpai name and logo. Future updates must be produced as new
-Xenpai Kart Downloader builds.
+This build contains only the English UI translation. Update checks use only
+the `Beasty-786/Xenpai-Kart-Downloader` release feed. Upstream Ghost Downloader
+changes must be reviewed and rebuilt here so they cannot replace the Xenpai
+name, publisher, logo, or English-only interface.

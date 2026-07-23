@@ -39,10 +39,15 @@ the same installer `AppId`. Only the semantic version changes. For example:
 
 `Xenpai-Kart-Downloader-v4.1.2-Windows-Setup.exe`
 
-Upstream Ghost Downloader automatic updates are intentionally disabled because
-installing an upstream binary would replace the Xenpai name and logo. New
-versions must be rebuilt and published from this repository. See
+The app checks only the `Beasty-786/Xenpai-Kart-Downloader` GitHub release
+feed. Upstream Ghost Downloader releases are reviewed as source changes, then
+rebuilt here so every update preserves the Xenpai name, icon, publisher,
+English-only interface, and stable installer identity. See
 [UPDATE_POLICY.md](UPDATE_POLICY.md).
+
+Each tagged release contains the Windows installer plus English-only extension
+packages for Chromium browsers (Chrome, Edge, Brave, Opera, and compatible
+browsers) and Firefox.
 
 ## License and attribution
 

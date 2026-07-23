@@ -16,8 +16,7 @@ from app.view.components.scroll_area import ScrollArea
 from app.config.cfg import cfg, LANGUAGE_TEXTS
 from app.platform.android import IS_ANDROID
 from app.config.constants import (
-    AUTHOR, AUTHOR_URL, CHROME_WEBSTORE_URL, EDGE_ADDONS_URL,
-    FEEDBACK_URL, FIREFOX_ADDONS_URL, VERSION, YEAR,
+    AUTHOR, AUTHOR_URL, FEEDBACK_URL, RELEASES_URL, VERSION, YEAR,
 )
 from app.view.components.category_settings import CategoryRulesCard
 from app.view.components.setting_card_group import (
@@ -32,8 +31,9 @@ from app.view.components.editors import FolderPicker
 
 class SettingPage(ScrollArea):
 
-    def __init__(self, featureService, browserService, coroutineRunner, categoryService, parent=None):
+    def __init__(self, taskService, featureService, browserService, coroutineRunner, categoryService, parent=None):
         super().__init__(parent)
+        self._taskService = taskService
         self._featureService = featureService
         self._browserService = browserService
         self._coroutineRunner = coroutineRunner
@@ -137,25 +137,10 @@ class SettingPage(ScrollArea):
         )
 
         self.storeInstallCard = HyperlinkCard(
-            FIREFOX_ADDONS_URL, self.tr("Firefox 商店"), FluentIcon.GLOBE,
-            self.tr("从商店安装扩展"),
-            self.tr("商店版扩展需等待审核后才能获得更新"),
+            RELEASES_URL, "Open extension downloads", FluentIcon.GLOBE,
+            "Chrome, Edge, Brave, Opera and Firefox",
+            "Download only Xenpai-branded English extension packages",
         )
-        edgeBtn = HyperlinkButton(self.storeInstallCard)
-        edgeBtn.setText(self.tr("Edge 商店"))
-        edgeBtn.setUrl(EDGE_ADDONS_URL)
-        self.storeInstallCard.hBoxLayout.insertWidget(
-            5, edgeBtn, 0, Qt.AlignmentFlag.AlignRight,
-        )
-        self.storeInstallCard.hBoxLayout.insertSpacing(6, 16)
-
-        chromeBtn = HyperlinkButton(self.storeInstallCard)
-        chromeBtn.setText(self.tr("Chrome 商店"))
-        chromeBtn.setUrl(CHROME_WEBSTORE_URL)
-        self.storeInstallCard.hBoxLayout.insertWidget(
-            5, chromeBtn, 0, Qt.AlignmentFlag.AlignRight,
-        )
-        self.storeInstallCard.hBoxLayout.insertSpacing(6, 16)
 
         self.chromiumInstallCard = PrimaryPushSettingCard(
             self.tr("一键安装"), FluentIcon.DOWNLOAD,
@@ -163,7 +148,7 @@ class SettingPage(ScrollArea):
             self.tr("自动解包扩展并引导加载（Chrome / Brave 等），扩展随桌面端更新自动升级"),
         )
         self.exportExtensionButton = HyperlinkButton(self.chromiumInstallCard)
-        self.exportExtensionButton.setText(self.tr("导出 CRX"))
+        self.exportExtensionButton.setText("Export ZIP")
         self.chromiumInstallCard.hBoxLayout.insertWidget(
             5, self.exportExtensionButton, 0, Qt.AlignmentFlag.AlignRight,
         )
@@ -292,7 +277,15 @@ class SettingPage(ScrollArea):
                 self.tr("当前为用户模式，数据保存在: {0}").format(APP_DATA_DIR),
             )
 
-        softwareCards = [self.autoRunCard]
+        softwareCards = [
+            SwitchSettingCard(
+                FluentIcon.UPDATE,
+                "Check for Xenpai updates at startup",
+                "Checks only the Beasty-786/Xenpai-Kart-Downloader release feed",
+                cfg.shouldCheckUpdateAtStartup,
+            ),
+            self.autoRunCard,
+        ]
         if not IS_ANDROID:
             softwareCards.append(
                 ComboBoxSettingCard(
@@ -323,7 +316,7 @@ class SettingPage(ScrollArea):
         )
 
         self.aboutCard = PrimaryPushSettingCard(
-            self.tr("关于"), FluentIcon.INFO, self.tr("关于"),
+            "Check for updates", FluentIcon.INFO, self.tr("关于"),
             f"© Copyright {YEAR}, {AUTHOR}. Version {VERSION}",
         )
 
@@ -426,12 +419,15 @@ class SettingPage(ScrollArea):
     def _onExportExtensionClicked(self) -> None:
         from PySide6.QtCore import QFile, QIODevice, QResource
         from PySide6.QtWidgets import QFileDialog
+        from app.config.constants import LATEST_EXTENSION_VERSION
         path, _ = QFileDialog.getSaveFileName(self, self.tr("选择导出路径"),
-                                              "./Extension.crx", "Chromium Extension(*.crx)")
+            f"./Xenpai-Kart-Downloader-Chromium-v{LATEST_EXTENSION_VERSION}.zip",
+            "Chromium Extension (*.zip)",
+        )
         if path:
             f = QFile(path)
             if f.open(QIODevice.OpenModeFlag.WriteOnly):
-                f.write(bytes(QResource(":/res/chrome_extension.crx").data()))
+                f.write(bytes(QResource(":/res/chrome_extension.zip").data()))
                 f.close()
 
     def _onUrlSchemeChanged(self, enabled: bool) -> None:
@@ -462,12 +458,17 @@ class SettingPage(ScrollArea):
         QApplication.instance().quit()
 
     def _onAboutCardClicked(self) -> None:
+        from app.update import fetchRelease
+
         InfoBar.info(
-            "Custom build updates",
-            "Install a newer Xenpai Kart Downloader build to update while keeping this name and logo.",
-            duration=5000,
-            position=InfoBarPosition.BOTTOM_RIGHT,
-            parent=self.window(),
+            "Checking Xenpai updates",
+            "Looking only at Beasty-786/Xenpai-Kart-Downloader releases...",
+            duration=1500, position=InfoBarPosition.BOTTOM_RIGHT, parent=self.window(),
+        )
+        self._coroutineRunner.submit(
+            fetchRelease(),
+            done=self._onUpdateChecked, failed=self._onUpdateCheckFailed,
+            owner=self,
         )
 
     def _onUpdateChecked(self, release) -> None:
@@ -481,7 +482,10 @@ class SettingPage(ScrollArea):
             return
 
         from app.update import showReleaseDialog
-        showReleaseDialog(release, self.window())
+        showReleaseDialog(
+            release, self.window(), self._coroutineRunner,
+            self._featureService, self._taskService,
+        )
 
     def _onUpdateCheckFailed(self, error: str) -> None:
         InfoBar.error(self.tr("检查更新失败"), self.tr("无法获取最新版本信息"),

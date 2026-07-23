@@ -43,7 +43,10 @@ class MobileMainWindow(QWidget):
             parent=self,
         )
         self.taskPage = MobileTaskPage(taskService, featureService, categoryService, speedMeter, parent=self)
-        self.settingPage = MobileSettingPage(featureService, browserService, coroutineRunner, categoryService, parent=self)
+        self.settingPage = MobileSettingPage(
+            taskService, featureService, browserService,
+            coroutineRunner, categoryService, parent=self,
+        )
         self.searchEdit = SearchLineEdit(self)
         self.addButton = PrimaryToolButton(FluentIcon.ADD, self)
         self.vBoxLayout = QVBoxLayout(self)
@@ -214,10 +217,20 @@ class MobileMainWindow(QWidget):
             parent=self,
         )
         downloadButton = PrimaryPushButton(FluentIcon.DOWNLOAD, self.tr("立即下载"))
-        downloadButton.clicked.connect(lambda: addBestAssetTask(release, self))
+        downloadButton.clicked.connect(
+            lambda: addBestAssetTask(
+                release, self, self._coroutineRunner,
+                self._featureService, self._taskService,
+            )
+        )
         infoBar.addWidget(downloadButton)
         detailButton = PushButton(FluentIcon.CHAT, self.tr("查看详情"))
-        detailButton.clicked.connect(lambda: showReleaseDialog(release, self))
+        detailButton.clicked.connect(
+            lambda: showReleaseDialog(
+                release, self, self._coroutineRunner,
+                self._featureService, self._taskService,
+            )
+        )
         infoBar.addWidget(detailButton)
         infoBar.show()
 

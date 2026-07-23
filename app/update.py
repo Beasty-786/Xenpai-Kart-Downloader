@@ -14,7 +14,7 @@ from app.client import buildClient
 from app.config.cfg import cfg, proxy
 from app.config.constants import VERSION
 
-RELEASE_API = "https://api.github.com/repos/XiaoYouChR/Ghost-Downloader-3/releases/latest"
+RELEASE_API = "https://api.github.com/repos/Beasty-786/Xenpai-Kart-Downloader/releases/latest"
 
 
 @dataclass(frozen=True)
@@ -93,6 +93,8 @@ def assetScore(name: str) -> int:
     from app.platform.android import IS_ANDROID
 
     lower = name.lower()
+    if not lower.startswith("xenpai-kart-downloader-"):
+        return -1
 
     if sys.platform == "win32":
         from app.platform.windows import isLessThanWin10
@@ -117,7 +119,11 @@ def assetScore(name: str) -> int:
         if kw in lower:
             platformScore = max(platformScore, 40 - i * 10)
 
-    if platformScore == 0 or not any(kw in lower for kw in archKw):
+    hasArchitecture = any(kw in lower for kw in archKw)
+    # Xenpai currently publishes one x64 Windows installer without an
+    # architecture suffix. It is still safe because this update feed belongs
+    # exclusively to the branded repository.
+    if platformScore == 0 or (not hasArchitecture and sys.platform != "win32"):
         return -1
 
     score = platformScore + 20

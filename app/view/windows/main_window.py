@@ -140,7 +140,7 @@ class MainWindow(MSFluentWindow):
             )
         if pageClass is SettingPage:
             return SettingPage(
-                self._featureService, self._browserService,
+                self._taskService, self._featureService, self._browserService,
                 self._coroutineRunner, self._categoryService, parent=self,
             )
         return self._featureService.createPage(pageClass, parent=self)
@@ -254,10 +254,20 @@ class MainWindow(MSFluentWindow):
             parent=self,
         )
         downloadButton = PrimaryPushButton(FluentIcon.DOWNLOAD, self.tr("立即下载"))
-        downloadButton.clicked.connect(lambda: addBestAssetTask(release, self))
+        downloadButton.clicked.connect(
+            lambda: addBestAssetTask(
+                release, self, self._coroutineRunner,
+                self._featureService, self._taskService,
+            )
+        )
         infoBar.addWidget(downloadButton)
         detailButton = PushButton(FluentIcon.CHAT, self.tr("查看详情"))
-        detailButton.clicked.connect(lambda: showReleaseDialog(release, self))
+        detailButton.clicked.connect(
+            lambda: showReleaseDialog(
+                release, self, self._coroutineRunner,
+                self._featureService, self._taskService,
+            )
+        )
         infoBar.addWidget(detailButton)
         sponsorButton = PushButton(FluentIcon.HEART, self.tr("请作者喝咖啡"))
         sponsorButton.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(AUTHOR_URL)))

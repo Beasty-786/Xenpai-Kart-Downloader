@@ -256,7 +256,9 @@ class Config(QConfig):
     )
 
     # 软件
-    shouldCheckUpdateAtStartup = ConfigItem("Software", "CheckUpdateAtStartUp", False, BoolValidator())
+    shouldCheckUpdateAtStartup = ConfigItem(
+        "Software", "CheckXenpaiUpdatesAtStartUp", True, BoolValidator(),
+    )
     shouldRunAtLogin = ConfigItem("Software", "AutoRun", False, BoolValidator())
     closeMode = OptionsConfigItem(
         "Software", "CloseMode", CloseMode.ASK,

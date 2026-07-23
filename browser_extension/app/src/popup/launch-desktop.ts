@@ -1,3 +1,3 @@
 export function launchDesktop(): void {
-  window.location.href = "ghostdownloader://launch";
+  window.location.href = "xenpaikartdownloader://launch";
 }
