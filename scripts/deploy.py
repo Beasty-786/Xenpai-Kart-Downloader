@@ -124,7 +124,7 @@ def buildArgs(onefile: bool = False) -> list[str]:
             f'--product-version={VERSION}',
             '--file-description="Xenpai Kart Downloader"',
             f'--copyright="Copyright(C) {YEAR} {AUTHOR}"',
-            '--output-dir=dist',
+            '--output-dir=build/standalone' if onefile else '--output-dir=dist',
         ]
         if onefile:
             args.extend([
@@ -290,7 +290,16 @@ def main() -> int:
     if result.returncode != 0:
         return result.returncode
 
-    if not options.onefile:
+    if options.onefile:
+        filename = f"Xenpai-Kart-Downloader-v{VERSION}-Standalone.exe"
+        source = REPO / "build" / "standalone" / filename
+        target = REPO / "dist" / filename
+        if not source.is_file():
+            raise FileNotFoundError(f"Standalone executable was not created: {source}")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+        print(f"Copied standalone executable to {target}")
+    else:
         copyPacks()
 
     if sys.platform == "darwin":
